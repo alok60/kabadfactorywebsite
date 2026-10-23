@@ -1,2 +1,2 @@
-# kabadfactorywebsite
-user frontend react
+# kabadfactory
+kabad factory react js customer frontend
