@@ -1,8 +1,7 @@
 export const siteConfig = {
   name: "Kabad Factory",
   domain: "https://www.kabadfactory.com",
-  apiBaseUrl:
-    import.meta.env.VITE_API_BASE_URL || "https://api.kabadfactory.com/api",
+  apiBaseUrl: import.meta.env.VITE_API_BASE_URL || "https://api.kabadfactory.com/api",
   //https://api.kabadfactory.com/api
   phone: "+91 8319060820",
   phonePlain: "918319060820",
