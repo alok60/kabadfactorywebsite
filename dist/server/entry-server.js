@@ -7,6 +7,7 @@ const siteConfig = {
   name: "Kabad Factory",
   domain: "https://www.kabadfactory.com",
   apiBaseUrl: "https://api.kabadfactory.com/api",
+  //https://api.kabadfactory.com/api
   phone: "+91 8319060820",
   phonePlain: "918319060820",
   email: "contact@kabadfactory.com",
@@ -509,10 +510,10 @@ function SiteFrame({ route, navigate, children }) {
   const { session, logout } = useAuth();
   return /* @__PURE__ */ jsxs("div", { children: [
     /* @__PURE__ */ jsx("a", { className: "sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2", href: "#main", children: "Skip to content" }),
-    /* @__PURE__ */ jsxs("header", { className: "sticky top-0 z-40 border-b border-line bg-white/[0.92] backdrop-blur-xl", children: [
-      /* @__PURE__ */ jsxs("div", { className: "container-page flex min-h-[76px] items-center justify-between gap-5", children: [
-        /* @__PURE__ */ jsxs("a", { href: "/", onClick: (event) => linkClick(event, "/", navigate), className: "flex items-center gap-3", children: [
-          /* @__PURE__ */ jsx("span", { className: "flex h-14 w-40 items-center justify-center xl:w-44", children: /* @__PURE__ */ jsx("img", { src: siteConfig.assets.logo, alt: "Kabad Factory", className: "h-full w-full object-contain" }) }),
+    /* @__PURE__ */ jsxs("header", { className: "sticky top-0 z-40 border-b border-line bg-white shadow-sm lg:bg-white/[0.92] lg:shadow-none lg:backdrop-blur-xl", children: [
+      /* @__PURE__ */ jsxs("div", { className: "container-page flex min-h-[68px] items-center justify-between gap-3 sm:min-h-[76px] sm:gap-5", children: [
+        /* @__PURE__ */ jsxs("a", { href: "/", onClick: (event) => linkClick(event, "/", navigate), className: "flex min-w-0 items-center gap-3", children: [
+          /* @__PURE__ */ jsx("span", { className: "flex h-12 w-36 shrink-0 items-center justify-center rounded-lg bg-white px-1 sm:h-14 sm:w-40 xl:w-44", children: /* @__PURE__ */ jsx("img", { src: siteConfig.assets.logo, alt: "Kabad Factory", className: "h-full w-full object-contain" }) }),
           /* @__PURE__ */ jsxs("span", { className: "sr-only", children: [
             /* @__PURE__ */ jsx("strong", { className: "block text-lg leading-5 text-ink", children: "Kabad Factory" }),
             /* @__PURE__ */ jsx("span", { className: "text-xs font-semibold uppercase tracking-wide text-brand-700", children: "Innovators of Recycling" })
@@ -532,12 +533,12 @@ function SiteFrame({ route, navigate, children }) {
           ] }) : /* @__PURE__ */ jsx(Fragment, { children: /* @__PURE__ */ jsx("a", { href: "/login", onClick: (event) => linkClick(event, "/login", navigate), className: "rounded-full px-3 py-2 text-sm font-extrabold text-muted hover:text-ink", children: "Login" }) }),
           /* @__PURE__ */ jsx("a", { href: "/schedule-pickup", onClick: (event) => linkClick(event, "/schedule-pickup", navigate), className: "rounded-full bg-brand-600 px-5 py-2.5 text-sm font-extrabold text-white shadow-soft hover:-translate-y-0.5 hover:bg-brand-700 hover:shadow-lift", children: "Schedule Pickup" })
         ] }),
-        /* @__PURE__ */ jsx("button", { className: "rounded-xl border border-line bg-white p-2 text-ink lg:hidden", onClick: () => setOpen(true), "aria-label": "Open menu", children: /* @__PURE__ */ jsx(Menu, {}) })
+        /* @__PURE__ */ jsx("button", { className: "shrink-0 rounded-xl border border-line bg-white p-2 text-ink shadow-sm lg:hidden", onClick: () => setOpen(true), "aria-label": "Open menu", children: /* @__PURE__ */ jsx(Menu, {}) })
       ] }),
-      open && /* @__PURE__ */ jsx("div", { className: "fixed inset-0 z-50 bg-ink/40 backdrop-blur-sm lg:hidden", children: /* @__PURE__ */ jsxs("div", { className: "ml-auto flex h-full w-80 max-w-[88vw] flex-col gap-2 bg-white p-5 shadow-lift", children: [
+      open && /* @__PURE__ */ jsx("div", { className: "fixed inset-0 z-50 bg-ink/55 lg:hidden", onClick: () => setOpen(false), children: /* @__PURE__ */ jsxs("div", { className: "ml-auto flex h-full w-80 max-w-[88vw] flex-col gap-2 overflow-y-auto border-l border-brand-100 bg-white p-5 text-ink shadow-2xl", onClick: (event) => event.stopPropagation(), children: [
         /* @__PURE__ */ jsxs("div", { className: "mb-3 flex items-center justify-between", children: [
-          /* @__PURE__ */ jsx("img", { src: siteConfig.assets.logo, alt: "Kabad Factory", className: "h-12 w-36 object-contain" }),
-          /* @__PURE__ */ jsx("button", { className: "rounded-xl border border-line p-2 text-ink", onClick: () => setOpen(false), "aria-label": "Close menu", children: /* @__PURE__ */ jsx(X, {}) })
+          /* @__PURE__ */ jsx("span", { className: "flex h-12 w-36 items-center rounded-lg bg-white px-1", children: /* @__PURE__ */ jsx("img", { src: siteConfig.assets.logo, alt: "Kabad Factory", className: "h-full w-full object-contain" }) }),
+          /* @__PURE__ */ jsx("button", { className: "rounded-xl border border-line bg-white p-2 text-ink shadow-sm", onClick: () => setOpen(false), "aria-label": "Close menu", children: /* @__PURE__ */ jsx(X, {}) })
         ] }),
         [...navLinks, { href: siteConfig.appDownloadUrl, label: "Get the App" }, { href: session ? "/account" : "/login", label: session ? "Account" : "Login" }].map((link) => /* @__PURE__ */ jsx("a", { href: link.href, onClick: (event) => {
           linkClick(event, link.href, navigate);
@@ -702,7 +703,7 @@ function RatesPage({ route, navigate }) {
   const { categories, loading, error, reload } = useCategories();
   const [search, setSearch] = useState("");
   const [selectedMaterial, setSelectedMaterial] = useState("All");
-  const availableMaterials = useMemo(() => MATERIAL_CATEGORY_ORDER.filter((material) => categories.some((item) => materialCategory(item) === material)), [categories]);
+  const availableMaterials = MATERIAL_CATEGORY_ORDER;
   const filteredCategories = useMemo(() => {
     const query = search.trim().toLocaleLowerCase();
     return categories.filter(
@@ -806,10 +807,11 @@ function SchedulePickupPage({ navigate }) {
   const [savingAddress, setSavingAddress] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successCharge, setSuccessCharge] = useState(null);
+  const [successBooking, setSuccessBooking] = useState(null);
   const [itemSearch, setItemSearch] = useState("");
   const [selectedMaterial, setSelectedMaterial] = useState("All");
   const activeCategories = useMemo(() => categories.filter((item) => item.isActive !== false && item.status !== "Hidden"), [categories]);
-  const availableMaterials = useMemo(() => MATERIAL_CATEGORY_ORDER.filter((material) => activeCategories.some((item) => materialCategory(item) === material)), [activeCategories]);
+  const availableMaterials = MATERIAL_CATEGORY_ORDER;
   const visibleCategories = useMemo(() => {
     const query = itemSearch.trim().toLocaleLowerCase();
     return activeCategories.filter((item) => (selectedMaterial === "All" || materialCategory(item) === selectedMaterial) && (!query || item.name.toLocaleLowerCase().includes(query)));
@@ -890,7 +892,7 @@ function SchedulePickupPage({ navigate }) {
     setErrors({});
   }
   async function submit() {
-    var _a2;
+    var _a2, _b;
     if (!session) {
       navigate("/login?next=/schedule-pickup");
       return;
@@ -915,6 +917,10 @@ function SchedulePickupPage({ navigate }) {
       });
       const charge = Number(((_a2 = booking.pickup) == null ? void 0 : _a2.pickupCharge) || 0);
       setPickupCharge(charge);
+      setSuccessBooking({ id: ((_b = booking.pickup) == null ? void 0 : _b.id) || 0, date: pickupDate, slot: timeSlot, address: selectedAddress ? formatAddress(selectedAddress) : "", items: selected.map((id) => {
+        var _a3;
+        return ((_a3 = activeCategories.find((item) => item.id === id)) == null ? void 0 : _a3.name) || "Scrap item";
+      }) });
       setSuccessCharge(charge);
       resetForm();
     } catch (err) {
@@ -934,13 +940,13 @@ function SchedulePickupPage({ navigate }) {
     ] }) });
   }
   return /* @__PURE__ */ jsxs(PageShell, { title: "Schedule Scrap Pickup", subtitle: "Select items, estimated weight, saved address, pickup charge, date, and slot. The same backend creates your pickup as the mobile app.", children: [
-    /* @__PURE__ */ jsx("div", { className: "mb-7 grid gap-3 md:grid-cols-6", children: ["Select Items", "Weight", "Pickup Address", "Pickup Charge", "Date / Time", "Review"].map((step, index) => /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border px-4 py-3 text-sm font-black transition ${scheduleStepComplete(index, { selected, weightRange, selectedAddressId, pickupCharge, pickupDate, timeSlot }) ? "border-brand-500 bg-brand-50 text-brand-700" : "border-brand-100 bg-white text-muted"}`, children: [
-      /* @__PURE__ */ jsx("span", { className: "mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white text-xs", children: index + 1 }),
+    /* @__PURE__ */ jsx("div", { className: "mb-5 grid gap-2 md:grid-cols-6", children: ["Select Items", "Weight", "Pickup Address", "Pickup Charge", "Date / Time", "Review"].map((step, index) => /* @__PURE__ */ jsxs("div", { className: `min-w-0 rounded-2xl border px-3 py-2 text-xs font-black transition sm:text-sm ${scheduleStepComplete(index, { selected, weightRange, selectedAddressId, pickupCharge, pickupDate, timeSlot }) ? "border-brand-500 bg-brand-50 text-brand-700" : "border-brand-100 bg-white text-muted"}`, children: [
+      /* @__PURE__ */ jsx("span", { className: "mr-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white text-[11px]", children: index + 1 }),
       step
     ] }, step)) }),
-    /* @__PURE__ */ jsxs("div", { className: "grid gap-6 lg:grid-cols-[1fr_390px]", children: [
-      /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
-        /* @__PURE__ */ jsxs("section", { className: "card reveal-up p-5", children: [
+    /* @__PURE__ */ jsxs("div", { className: "grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)] lg:gap-5", children: [
+      /* @__PURE__ */ jsxs("div", { className: "min-w-0 space-y-4", children: [
+        /* @__PURE__ */ jsxs("section", { className: "card reveal-up min-w-0 p-4 sm:p-5", children: [
           /* @__PURE__ */ jsx(SectionHeader, { icon: /* @__PURE__ */ jsx(Truck, {}), title: "Select Items", error: errors.items }),
           /* @__PURE__ */ jsx("p", { className: "mt-2 text-sm text-muted", children: "Raddi ho ya loha, plastic ho ya purana samaan - Kabad Factory sab le jayega." }),
           /* @__PURE__ */ jsxs("label", { className: "relative mt-5 block", children: [
@@ -949,18 +955,18 @@ function SchedulePickupPage({ navigate }) {
             /* @__PURE__ */ jsx("input", { value: itemSearch, onChange: (event) => setItemSearch(event.target.value), placeholder: "Search any materials...", className: "focus-ring min-h-12 w-full rounded-2xl border border-brand-100 bg-brand-50 py-3 pl-11 pr-11 text-sm font-semibold text-ink placeholder:text-muted" }),
             itemSearch && /* @__PURE__ */ jsx("button", { type: "button", onClick: () => setItemSearch(""), "aria-label": "Clear search", className: "focus-ring absolute right-2 top-1/2 -translate-y-1/2 rounded-xl p-2 text-muted hover:bg-white", children: /* @__PURE__ */ jsx(X, { size: 18 }) })
           ] }),
-          /* @__PURE__ */ jsx("div", { className: "mt-4 flex gap-2 overflow-x-auto pb-2", "aria-label": "Material categories", children: ["All", ...availableMaterials].map((material) => /* @__PURE__ */ jsx("button", { type: "button", onClick: () => setSelectedMaterial(material), className: `focus-ring shrink-0 rounded-full px-4 py-2 text-sm font-extrabold ${selectedMaterial === material ? "bg-brand-600 text-white" : "bg-slate-100 text-ink hover:bg-brand-50"}`, children: material }, material)) }),
-          categoriesLoading && !activeCategories.length ? /* @__PURE__ */ jsx("div", { className: "mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3", children: Array.from({ length: 6 }).map((_, index) => /* @__PURE__ */ jsx("div", { className: "h-24 animate-pulse rounded-2xl bg-brand-50" }, index)) }) : /* @__PURE__ */ jsx("div", { className: "mt-5 space-y-6", children: visibleGroups.map((group) => /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx("h3", { className: "mb-3 font-black text-ink", children: group.material }),
-            /* @__PURE__ */ jsx("div", { className: "grid gap-3 sm:grid-cols-2 xl:grid-cols-3", children: group.items.map((item) => /* @__PURE__ */ jsx(ScheduleCategoryItem, { item, selected: selected.includes(item.id), onToggle: () => setSelected((current) => current.includes(item.id) ? current.filter((id) => id !== item.id) : [...current, item.id]) }, item.id)) })
+          /* @__PURE__ */ jsx("div", { className: "mt-4 flex max-w-full gap-2 overflow-x-auto pb-2", "aria-label": "Material categories", children: ["All", ...availableMaterials].map((material) => /* @__PURE__ */ jsx("button", { type: "button", onClick: () => setSelectedMaterial(material), className: `focus-ring shrink-0 rounded-full px-4 py-2 text-sm font-extrabold ${selectedMaterial === material ? "bg-brand-600 text-white" : "bg-slate-100 text-ink hover:bg-brand-50"}`, children: material }, material)) }),
+          categoriesLoading && !activeCategories.length ? /* @__PURE__ */ jsx("div", { className: "mt-4 grid gap-2 sm:grid-cols-2 2xl:grid-cols-4", children: Array.from({ length: 6 }).map((_, index) => /* @__PURE__ */ jsx("div", { className: "h-20 animate-pulse rounded-2xl bg-brand-50" }, index)) }) : /* @__PURE__ */ jsx("div", { className: "mt-4 space-y-5", children: visibleGroups.map((group) => /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("h3", { className: "mb-2 font-black text-ink", children: group.material }),
+            /* @__PURE__ */ jsx("div", { className: "grid min-w-0 gap-2 sm:grid-cols-2 2xl:grid-cols-4", children: group.items.map((item) => /* @__PURE__ */ jsx(ScheduleCategoryItem, { item, selected: selected.includes(item.id), onToggle: () => setSelected((current) => current.includes(item.id) ? current.filter((id) => id !== item.id) : [...current, item.id]) }, item.id)) })
           ] }, group.material)) }),
           !categoriesLoading && !visibleCategories.length && /* @__PURE__ */ jsx("p", { className: "mt-5 rounded-2xl bg-brand-50 p-4 text-sm font-bold text-muted", children: "No scrap items match your search. Try another material name or category." })
         ] }),
-        /* @__PURE__ */ jsxs("section", { className: "card reveal-up p-5", children: [
+        /* @__PURE__ */ jsxs("section", { className: "card reveal-up min-w-0 p-4 sm:p-5", children: [
           /* @__PURE__ */ jsx(SectionHeader, { icon: /* @__PURE__ */ jsx(WalletCards, {}), title: "Estimated Weight / Quantity", error: errors.weightRange }),
           /* @__PURE__ */ jsx("div", { className: "mt-4 flex flex-wrap gap-2", children: weightRanges.map((range) => /* @__PURE__ */ jsx("button", { onClick: () => setWeightRange(range), className: `rounded-full border px-4 py-2 text-sm font-black transition ${weightRange === range ? "border-brand-600 bg-brand-600 text-white" : "border-brand-100 bg-white text-muted hover:border-brand-200"}`, children: range }, range)) })
         ] }),
-        /* @__PURE__ */ jsxs("section", { className: "card reveal-up p-5", children: [
+        /* @__PURE__ */ jsxs("section", { className: "card reveal-up min-w-0 p-4 sm:p-5", children: [
           /* @__PURE__ */ jsxs("div", { className: "flex flex-wrap items-center justify-between gap-3", children: [
             /* @__PURE__ */ jsx(SectionHeader, { icon: /* @__PURE__ */ jsx(MapPinned, {}), title: "Saved Address", error: errors.address }),
             /* @__PURE__ */ jsxs("button", { onClick: () => setShowAddressForm(true), className: "inline-flex items-center gap-2 rounded-full border border-brand-100 px-4 py-2 text-sm font-black text-brand-700", children: [
@@ -968,24 +974,28 @@ function SchedulePickupPage({ navigate }) {
               " Add Address"
             ] })
           ] }),
-          pageLoading ? /* @__PURE__ */ jsx("div", { className: "mt-4 h-28 animate-pulse rounded-2xl bg-brand-50" }) : addresses.length > 0 ? /* @__PURE__ */ jsx("div", { className: "mt-4 grid gap-3", children: addresses.map((item) => /* @__PURE__ */ jsxs("button", { onClick: () => setSelectedAddressId(item.id), className: `flex items-start justify-between gap-4 rounded-2xl border p-4 text-left transition ${selectedAddressId === item.id ? "border-brand-500 bg-brand-50 shadow-soft" : "border-brand-100 bg-white hover:border-brand-200"}`, "aria-pressed": selectedAddressId === item.id, children: [
-            /* @__PURE__ */ jsxs("span", { children: [
-              /* @__PURE__ */ jsx("strong", { className: "block text-ink", children: humanize(item.label) }),
-              /* @__PURE__ */ jsx("span", { className: "mt-1 block text-sm leading-6 text-muted", children: formatAddress(item) }),
-              /* @__PURE__ */ jsxs("span", { className: "mt-2 block text-sm font-black text-ink", children: [
-                item.fullName,
+          pageLoading ? /* @__PURE__ */ jsx("div", { className: "mt-4 h-28 animate-pulse rounded-2xl bg-brand-50" }) : addresses.length > 0 ? /* @__PURE__ */ jsxs("div", { className: "mt-4 min-w-0", children: [
+            /* @__PURE__ */ jsx("label", { className: "sr-only", htmlFor: "pickup-address", children: "Saved pickup address" }),
+            /* @__PURE__ */ jsx("select", { id: "pickup-address", value: selectedAddressId || "", onChange: (event) => setSelectedAddressId(Number(event.target.value) || null), className: "focus-ring min-h-12 w-full min-w-0 rounded-2xl border border-brand-100 bg-white px-3 text-sm font-bold text-ink", children: addresses.map((item) => /* @__PURE__ */ jsx("option", { value: item.id, children: `${humanize(item.label)}${item.isDefault ? " (Default)" : ""} — ${formatAddress(item)}` }, item.id)) }),
+            selectedAddress && /* @__PURE__ */ jsxs("div", { className: "mt-3 min-w-0 rounded-2xl bg-brand-50 p-3", children: [
+              /* @__PURE__ */ jsxs("strong", { className: "text-ink", children: [
+                humanize(selectedAddress.label),
+                selectedAddress.isDefault ? " · Default" : ""
+              ] }),
+              /* @__PURE__ */ jsx("p", { className: "mt-1 break-words text-sm leading-6 text-muted", children: formatAddress(selectedAddress) }),
+              /* @__PURE__ */ jsxs("p", { className: "mt-1 text-sm font-bold text-ink", children: [
+                selectedAddress.fullName,
                 " | ",
-                item.mobile
+                selectedAddress.mobile
               ] })
-            ] }),
-            /* @__PURE__ */ jsx("span", { className: `shrink-0 rounded-full px-3 py-1 text-xs font-black ${item.isDefault || selectedAddressId === item.id ? "bg-brand-600 text-white" : "bg-brand-50 text-brand-700"}`, children: selectedAddressId === item.id ? "Selected" : item.isDefault ? "Default" : "Use" })
-          ] }, item.id)) }) : /* @__PURE__ */ jsxs("div", { className: "mt-4 rounded-2xl border border-dashed border-brand-200 bg-brand-50 p-4", children: [
+            ] })
+          ] }) : /* @__PURE__ */ jsxs("div", { className: "mt-4 rounded-2xl border border-dashed border-brand-200 bg-brand-50 p-4", children: [
             /* @__PURE__ */ jsx("p", { className: "font-black text-ink", children: "No saved address found" }),
             /* @__PURE__ */ jsx("p", { className: "mt-1 text-sm text-muted", children: "Add your pickup address once, then use it for faster repeat bookings." })
           ] }),
           showAddressForm && /* @__PURE__ */ jsx(AddressForm, { draft: addressDraft, setDraft: setAddressDraft, errors: addressErrors, saving: savingAddress, onSave: saveAddress, onCancel: () => addresses.length ? setShowAddressForm(false) : void 0 })
         ] }),
-        /* @__PURE__ */ jsxs("section", { className: "card reveal-up p-5", children: [
+        /* @__PURE__ */ jsxs("section", { className: "card reveal-up min-w-0 p-4 sm:p-5", children: [
           /* @__PURE__ */ jsx(SectionHeader, { icon: /* @__PURE__ */ jsx(CalendarDays, {}), title: "Pickup Date / Time", error: errors.pickupDate || errors.timeSlot }),
           /* @__PURE__ */ jsx("div", { className: "mt-4 flex gap-3 overflow-x-auto pb-2", children: quickDates.map((date) => /* @__PURE__ */ jsxs("button", { onClick: () => setPickupDate(date.value), className: `min-w-[88px] rounded-2xl border px-3 py-3 text-center transition ${pickupDate === date.value ? "border-brand-600 bg-brand-600 text-white" : "border-brand-100 bg-white text-ink"}`, children: [
             /* @__PURE__ */ jsx("span", { className: "block text-xs font-black uppercase", children: date.isToday ? "Today" : date.day }),
@@ -998,7 +1008,7 @@ function SchedulePickupPage({ navigate }) {
           ] }, slot)) })
         ] })
       ] }),
-      /* @__PURE__ */ jsx("aside", { className: "lg:sticky lg:top-24 lg:self-start", children: /* @__PURE__ */ jsxs("div", { className: "card p-5", children: [
+      /* @__PURE__ */ jsx("aside", { className: "min-w-0 lg:sticky lg:top-24 lg:self-start", children: /* @__PURE__ */ jsxs("div", { className: "card min-w-0 p-4 sm:p-5", children: [
         /* @__PURE__ */ jsx("h2", { className: "text-xl font-black text-ink", children: "Review Pickup" }),
         /* @__PURE__ */ jsxs("div", { className: "mt-4 space-y-4 text-sm", children: [
           /* @__PURE__ */ jsx(ReviewRow, { label: "Items", value: selected.length ? `${selected.length} selected` : "Select scrap items" }),
@@ -1018,25 +1028,39 @@ function SchedulePickupPage({ navigate }) {
     successCharge !== null && /* @__PURE__ */ jsx("div", { className: "fixed inset-0 z-50 grid place-items-center bg-ink/50 p-4 backdrop-blur-sm", role: "dialog", "aria-modal": "true", "aria-labelledby": "success-title", children: /* @__PURE__ */ jsxs("div", { className: "success-pop max-w-md card p-7 text-center", children: [
       /* @__PURE__ */ jsx("div", { className: "mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-50 text-brand-700", children: /* @__PURE__ */ jsx(CheckCircle2, { size: 34 }) }),
       /* @__PURE__ */ jsx("h2", { id: "success-title", className: "mt-5 text-2xl font-black text-ink", children: "Pickup scheduled successfully" }),
+      successBooking && /* @__PURE__ */ jsxs("div", { className: "mt-4 rounded-2xl bg-brand-50 p-4 text-left text-sm", children: [
+        /* @__PURE__ */ jsxs("p", { className: "font-black text-brand-700", children: [
+          "Booking reference: #KF",
+          successBooking.id
+        ] }),
+        /* @__PURE__ */ jsxs("p", { className: "mt-2 text-muted", children: [
+          readableDate(successBooking.date),
+          " · ",
+          successBooking.slot
+        ] }),
+        /* @__PURE__ */ jsx("p", { className: "mt-1 text-muted", children: successBooking.address }),
+        /* @__PURE__ */ jsx("p", { className: "mt-2 font-bold text-ink", children: successBooking.items.join(", ") })
+      ] }),
       /* @__PURE__ */ jsxs("p", { className: "mt-2 font-bold text-muted", children: [
         "Pickup Charge: ",
         successCharge > 0 ? `₹${successCharge.toFixed(0)}` : "Free"
       ] }),
       /* @__PURE__ */ jsx("button", { onClick: () => {
         setSuccessCharge(null);
-        navigate("/");
-      }, className: "mt-6 w-full rounded-2xl bg-brand-600 px-5 py-3 font-black text-white", children: "OK" })
+        setSuccessBooking(null);
+        navigate("/orders");
+      }, className: "mt-6 w-full rounded-2xl bg-brand-600 px-5 py-3 font-black text-white", children: "View bookings" })
     ] }) })
   ] });
 }
 function ScheduleCategoryItem({ item, selected, onToggle }) {
   const [imageFailed, setImageFailed] = useState(false);
-  return /* @__PURE__ */ jsxs("button", { onClick: onToggle, className: `group flex min-h-24 items-center justify-between gap-3 rounded-2xl border p-4 text-left transition hover:-translate-y-0.5 ${selected ? "border-brand-500 bg-brand-50 shadow-soft" : "border-brand-100 bg-white hover:border-brand-200"}`, "aria-pressed": selected, children: [
-    /* @__PURE__ */ jsxs("span", { className: "flex min-w-0 items-center gap-3", children: [
-      /* @__PURE__ */ jsx("span", { className: "flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-50 text-brand-700", children: item.iconUrl && !imageFailed ? /* @__PURE__ */ jsx("img", { src: item.iconUrl, alt: "", className: "h-full w-full object-cover", onError: () => setImageFailed(true) }) : /* @__PURE__ */ jsx(Recycle, { size: 20 }) }),
+  return /* @__PURE__ */ jsxs("button", { onClick: onToggle, className: `group flex min-w-0 items-center justify-between gap-2 rounded-2xl border p-3 text-left transition hover:-translate-y-0.5 ${selected ? "border-brand-500 bg-brand-50 shadow-soft" : "border-brand-100 bg-white hover:border-brand-200"}`, "aria-pressed": selected, children: [
+    /* @__PURE__ */ jsxs("span", { className: "flex min-w-0 items-center gap-2", children: [
+      /* @__PURE__ */ jsx("span", { className: "flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-50 text-brand-700", children: item.iconUrl && !imageFailed ? /* @__PURE__ */ jsx("img", { src: item.iconUrl, alt: "", className: "h-full w-full object-cover", onError: () => setImageFailed(true) }) : /* @__PURE__ */ jsx(Recycle, { size: 18 }) }),
       /* @__PURE__ */ jsxs("span", { className: "min-w-0", children: [
-        /* @__PURE__ */ jsx("strong", { className: "block truncate text-ink", children: item.name }),
-        /* @__PURE__ */ jsx("span", { className: "text-sm text-muted", children: formatRate(item) })
+        /* @__PURE__ */ jsx("strong", { className: "block break-words text-sm leading-tight text-ink", children: item.name }),
+        /* @__PURE__ */ jsx("span", { className: "mt-1 block text-xs text-muted", children: formatRate(item) })
       ] })
     ] }),
     selected && /* @__PURE__ */ jsx(CheckCircle2, { className: "shrink-0 text-brand-600" })
