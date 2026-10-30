@@ -53,7 +53,7 @@ export type RouteDef = {
 };
 
 export const navLinks = [
-  { href: "/", label: "Home-" },
+  { href: "/", label: "Home" },
   { href: "/about", label: "About Us" },
   { href: "/scrap-rates", label: "Scrap Rates" },
   { href: "/how-it-works", label: "How It Works" },
