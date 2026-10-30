@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
+  AlertTriangle,
   BadgeCheck,
   CalendarDays,
   CheckCircle2,
@@ -448,6 +449,10 @@ function SchedulePickupPage({ navigate }: { navigate: (path: string) => void }) 
   const [successBooking, setSuccessBooking] = useState<{ id: number; date: string; slot: string; address: string; items: string[] } | null>(null);
   const [itemSearch, setItemSearch] = useState("");
   const [selectedMaterial, setSelectedMaterial] = useState("All");
+  const [showValidationPopup, setShowValidationPopup] = useState(false);
+  const [highlightSection, setHighlightSection] = useState("");
+  const scheduleButtonRef = useRef<HTMLButtonElement>(null);
+  const closeValidationRef = useRef<HTMLButtonElement>(null);
 
   const activeCategories = useMemo(() => categories.filter((item: Category & { isActive?: boolean; status?: string }) => item.isActive !== false && item.status !== "Hidden"), [categories]);
   const availableMaterials = MATERIAL_CATEGORY_ORDER;
@@ -460,6 +465,34 @@ function SchedulePickupPage({ navigate }: { navigate: (path: string) => void }) 
   const selectedItems = useMemo(() => selected.map((categoryId) => ({ categoryId, estimatedQuantity: estimateQuantity(weightRange) })), [selected, weightRange]);
   const quickDates = useMemo(() => nextDates(14), []);
   const canSubmit = Boolean(selected.length && weightRange && pickupDate && timeSlot && selectedAddressId);
+  const bookingValidation = validateBooking({ selected, weightRange, pickupDate, timeSlot, selectedAddressId, selectedAddress, quickDates, timeSlots });
+  const missingFields = [
+    { key: "items", label: bookingValidation.items, section: "schedule-items" },
+    { key: "weightRange", label: bookingValidation.weightRange, section: "schedule-weight" },
+    { key: "address", label: bookingValidation.address, section: "schedule-address" },
+    { key: "pickupDate", label: bookingValidation.pickupDate, section: "schedule-datetime" },
+    { key: "timeSlot", label: bookingValidation.timeSlot, section: "schedule-datetime" }
+  ].filter((field): field is { key: string; label: string; section: string } => Boolean(field.label));
+
+  useEffect(() => {
+    if (!showValidationPopup) return;
+    closeValidationRef.current?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeValidationPopup();
+      if (event.key === "Tab") {
+        event.preventDefault();
+        closeValidationRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [showValidationPopup]);
+
+  useEffect(() => {
+    if (!highlightSection) return;
+    const timer = window.setTimeout(() => setHighlightSection(""), 1800);
+    return () => window.clearTimeout(timer);
+  }, [highlightSection]);
 
   useEffect(() => {
     if (!session) return;
@@ -544,9 +577,12 @@ function SchedulePickupPage({ navigate }: { navigate: (path: string) => void }) 
       return;
     }
     if (loading) return;
-    const validation = validateBooking({ selected, weightRange, pickupDate, timeSlot, selectedAddressId });
+    const validation = validateBooking({ selected, weightRange, pickupDate, timeSlot, selectedAddressId, selectedAddress, quickDates, timeSlots });
     setErrors(validation);
-    if (Object.keys(validation).length) return;
+    if (Object.keys(validation).length) {
+      setShowValidationPopup(true);
+      return;
+    }
 
     setLoading(true);
     try {
@@ -574,6 +610,17 @@ function SchedulePickupPage({ navigate }: { navigate: (path: string) => void }) 
     }
   }
 
+  function closeValidationPopup() {
+    setShowValidationPopup(false);
+    window.setTimeout(() => scheduleButtonRef.current?.focus(), 0);
+  }
+
+  function goToMissingField(section: string) {
+    closeValidationPopup();
+    setHighlightSection(section);
+    window.setTimeout(() => document.getElementById(section)?.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
+  }
+
   if (!session) {
     return (
       <PageShell title="Schedule Scrap Pickup" subtitle="Login or register first, then continue booking your doorstep scrap pickup online.">
@@ -592,16 +639,25 @@ function SchedulePickupPage({ navigate }: { navigate: (path: string) => void }) 
   return (
     <PageShell title="Schedule Scrap Pickup" subtitle="Select items, estimated weight, saved address, pickup charge, date, and slot. The same backend creates your pickup as the mobile app.">
       <div className="mb-5 grid gap-2 md:grid-cols-6">
-        {["Select Items", "Weight", "Pickup Address", "Pickup Charge", "Date / Time", "Review"].map((step, index) => (
-          <div key={step} className={`min-w-0 rounded-2xl border px-3 py-2 text-xs font-black transition sm:text-sm ${scheduleStepComplete(index, { selected, weightRange, selectedAddressId, pickupCharge, pickupDate, timeSlot }) ? "border-brand-500 bg-brand-50 text-brand-700" : "border-brand-100 bg-white text-muted"}`}>
-            <span className="mr-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white text-[11px]">{index + 1}</span>{step}
-          </div>
-        ))}
+        {["Select Items", "Weight", "Pickup Address", "Pickup Charge", "Date / Time", "Review"].map((step, index) => {
+          const targetIds = ["schedule-items", "schedule-weight", "schedule-address", null, "schedule-datetime", "schedule-review"];
+          const className = `min-w-0 rounded-2xl border px-3 py-2 text-left text-xs font-black transition sm:text-sm ${scheduleStepComplete(index, { selected, weightRange, selectedAddressId, pickupCharge, pickupDate, timeSlot }) ? "border-brand-500 bg-brand-50 text-brand-700" : "border-brand-100 bg-white text-muted"}`;
+          const content = <><span className="mr-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white text-[11px]">{index + 1}</span>{step}</>;
+          return targetIds[index] ? (
+            <button key={step} type="button" aria-label={`Go to ${step}`} onClick={() => document.getElementById(targetIds[index]!)?.scrollIntoView({ behavior: "smooth", block: "start" })} className={`${className} cursor-pointer hover:border-brand-300`}>
+              {content}
+            </button>
+          ) : (
+            <div key={step} aria-disabled="true" className={`${className} cursor-default`}>
+              {content}
+            </div>
+          );
+        })}
       </div>
 
       <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)] lg:gap-5">
         <div className="min-w-0 space-y-4">
-          <section className="card reveal-up min-w-0 p-4 sm:p-5">
+          <section id="schedule-items" className={`card reveal-up min-w-0 scroll-mt-24 p-4 sm:p-5 transition-shadow ${highlightSection === "schedule-items" ? "ring-2 ring-amber-400 ring-offset-2" : ""}`}>
             <SectionHeader icon={<Truck />} title="Select Items" error={errors.items} />
             <p className="mt-2 text-sm text-muted">Raddi ho ya loha, plastic ho ya purana samaan - Kabad Factory sab le jayega.</p>
             <label className="relative mt-5 block">
@@ -617,7 +673,7 @@ function SchedulePickupPage({ navigate }: { navigate: (path: string) => void }) 
             {!categoriesLoading && !visibleCategories.length && <p className="mt-5 rounded-2xl bg-brand-50 p-4 text-sm font-bold text-muted">No scrap items match your search. Try another material name or category.</p>}
           </section>
 
-          <section className="card reveal-up min-w-0 p-4 sm:p-5">
+          <section id="schedule-weight" className={`card reveal-up min-w-0 scroll-mt-24 p-4 sm:p-5 transition-shadow ${highlightSection === "schedule-weight" ? "ring-2 ring-amber-400 ring-offset-2" : ""}`}>
             <SectionHeader icon={<WalletCards />} title="Estimated Weight / Quantity" error={errors.weightRange} />
             <div className="mt-4 flex flex-wrap gap-2">
               {weightRanges.map((range) => (
@@ -626,7 +682,7 @@ function SchedulePickupPage({ navigate }: { navigate: (path: string) => void }) 
             </div>
           </section>
 
-          <section className="card reveal-up min-w-0 p-4 sm:p-5">
+          <section id="schedule-address" className={`card reveal-up min-w-0 scroll-mt-24 p-4 sm:p-5 transition-shadow ${highlightSection === "schedule-address" ? "ring-2 ring-amber-400 ring-offset-2" : ""}`}>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <SectionHeader icon={<MapPinned />} title="Saved Address" error={errors.address} />
               <button onClick={() => setShowAddressForm(true)} className="inline-flex items-center gap-2 rounded-full border border-brand-100 px-4 py-2 text-sm font-black text-brand-700"><Plus size={16} /> Add Address</button>
@@ -647,7 +703,7 @@ function SchedulePickupPage({ navigate }: { navigate: (path: string) => void }) 
             )}
           </section>
 
-          <section className="card reveal-up min-w-0 p-4 sm:p-5">
+          <section id="schedule-datetime" className={`card reveal-up min-w-0 scroll-mt-24 p-4 sm:p-5 transition-shadow ${highlightSection === "schedule-datetime" ? "ring-2 ring-amber-400 ring-offset-2" : ""}`}>
             <SectionHeader icon={<CalendarDays />} title="Pickup Date / Time" error={errors.pickupDate || errors.timeSlot} />
             <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
               {quickDates.map((date) => (
@@ -666,7 +722,7 @@ function SchedulePickupPage({ navigate }: { navigate: (path: string) => void }) 
           </section>
         </div>
 
-        <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
+        <aside id="schedule-review" className="min-w-0 scroll-mt-24 lg:sticky lg:top-24 lg:self-start">
           <div className="card min-w-0 p-4 sm:p-5">
             <h2 className="text-xl font-black text-ink">Review Pickup</h2>
             <div className="mt-4 space-y-4 text-sm">
@@ -677,11 +733,35 @@ function SchedulePickupPage({ navigate }: { navigate: (path: string) => void }) 
               <ReviewRow label="Slot" value={pickupDate && timeSlot ? `${readableDate(pickupDate)} | ${timeSlot}` : "Choose date and time"} />
             </div>
             {errors.submit && <p className="mt-4 rounded-xl bg-red-50 p-3 text-sm font-bold text-red-700">{errors.submit}</p>}
-            <button onClick={submit} disabled={loading || !canSubmit} className="mt-5 w-full rounded-2xl bg-brand-600 px-5 py-3 font-black text-white transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60">{loading ? "Scheduling..." : "Schedule Pickup"}</button>
+            <button ref={scheduleButtonRef} onClick={submit} disabled={loading} aria-disabled={!canSubmit || loading} className={`mt-5 w-full rounded-2xl px-5 py-3 font-black text-white transition ${canSubmit ? "bg-brand-600 hover:-translate-y-0.5" : "cursor-pointer bg-brand-600/60"} disabled:cursor-wait disabled:opacity-60`}>{loading ? "Scheduling..." : "Schedule Pickup"}</button>
             <a href={siteConfig.appDownloadUrl} className="mt-3 flex items-center justify-center gap-2 rounded-2xl border border-brand-100 px-5 py-3 text-sm font-black text-brand-700"><Smartphone size={17} /> Schedule Faster with the App</a>
           </div>
         </aside>
       </div>
+
+      {showValidationPopup && missingFields.length > 0 && (
+        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-ink/55 p-3 backdrop-blur-sm sm:p-5" onMouseDown={(event) => { if (event.target === event.currentTarget) closeValidationPopup(); }}>
+          <section role="dialog" aria-modal="true" aria-labelledby="validation-title" aria-describedby="validation-description" className="my-auto w-full max-w-lg rounded-3xl bg-white p-5 shadow-2xl sm:p-7">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-600"><AlertTriangle size={25} aria-hidden="true" /></div>
+              <div className="min-w-0 flex-1">
+                <h2 id="validation-title" className="text-xl font-black text-ink sm:text-2xl">Complete Your Pickup Details</h2>
+                <p id="validation-description" className="mt-2 text-sm leading-6 text-muted">Please complete the following information before scheduling your pickup.</p>
+              </div>
+              <button type="button" onClick={closeValidationPopup} aria-label="Close validation message" className="rounded-xl p-2 text-muted hover:bg-slate-100"><X size={20} /></button>
+            </div>
+            <p className="mt-5 text-sm font-black text-ink">Please complete:</p>
+            <ul className="mt-2 space-y-2">
+              {missingFields.map((field) => (
+                <li key={field.key}>
+                  <button type="button" onClick={() => goToMissingField(field.section)} className="w-full rounded-xl px-3 py-2 text-left text-sm font-semibold leading-5 text-brand-700 hover:bg-brand-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600">{field.label}</button>
+                </li>
+              ))}
+            </ul>
+            <button ref={closeValidationRef} type="button" onClick={closeValidationPopup} className="mt-5 w-full rounded-2xl bg-brand-600 px-5 py-3 font-black text-white hover:bg-brand-700">Got It</button>
+          </section>
+        </div>
+      )}
 
       {successCharge !== null && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-ink/50 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="success-title">
@@ -1416,13 +1496,13 @@ function estimateQuantity(range: string) {
   return 250;
 }
 
-function validateBooking(values: { selected: number[]; weightRange: string; pickupDate: string; timeSlot: string; selectedAddressId: number | null }) {
+function validateBooking(values: { selected: number[]; weightRange: string; pickupDate: string; timeSlot: string; selectedAddressId: number | null; selectedAddress: Address | null; quickDates: { value: string }[]; timeSlots: string[] }) {
   const errors: BookingErrors = {};
   if (!values.selected.length) errors.items = "Please select at least one scrap item.";
-  if (!values.weightRange) errors.weightRange = "Please select the estimated weight.";
-  if (!values.selectedAddressId) errors.address = "Please select a saved pickup address.";
-  if (!values.pickupDate) errors.pickupDate = "Please select a pickup date.";
-  if (!values.timeSlot) errors.timeSlot = "Please select a time slot.";
+  if (!weightRanges.includes(values.weightRange)) errors.weightRange = "Please select a valid estimated weight range.";
+  if (!values.selectedAddressId || !values.selectedAddress) errors.address = "Please complete or select a saved pickup address.";
+  if (!values.pickupDate || !values.quickDates.some((date) => date.value === values.pickupDate)) errors.pickupDate = "Please select an available pickup date.";
+  if (!values.timeSlot || !values.timeSlots.includes(values.timeSlot)) errors.timeSlot = "Please select an available time slot.";
   return errors;
 }
 
